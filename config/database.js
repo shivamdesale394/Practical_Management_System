@@ -1,12 +1,25 @@
-import mongoose from "mongoose";
-const dbConnect = async ()=>{
-    try{
-        await mongoose.connect(process.env.MONGODB_URL);
-       console.log("MongoDB connected Successfully...")
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
+dotenv.config(); // This loads variables from .env into process.env
+
+const dbConnect = async () => {
+  try {
+    const uri = process.env.MONGODB_URL;
+    if (!uri) {
+      throw new Error('MONGODB_URL is undefined');
     }
-    catch(error) {
-        console.log("Connection Faild",error)
-    }
-}
-export default dbConnect; // exporting the function to use it in other files
+
+    await mongoose.connect(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    console.log('MongoDB connected successfully!');
+  } catch (error) {
+    console.error(`Connection Failed: ${error.message}`);
+    process.exit(1);
+  }
+};
+
+export default dbConnect;
